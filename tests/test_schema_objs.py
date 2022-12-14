@@ -1,5 +1,6 @@
 import pytest
 import copy
+from collections import Counter
 from common.schema.objs import Simple, List, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
 
 
@@ -38,12 +39,6 @@ def complex_dict():
     return Dict({'a': Simple(int), 'b': List(Simple(float)), 'c': Dict(
         {'a': Simple(str), 'b': Optional(Simple(int))})})
 
-
-@pytest.fixture()
-def dynamic_dict():
-    return DynamicDict({'a': Simple(int), 'b': Simple(float)})
-
-
 @pytest.fixture()
 def int_float_union():
     return Union({Simple(int), Simple(float)})
@@ -58,30 +53,19 @@ def optional_int():
 def optional_int_list():
     return Optional(List(Simple(int)))
 
-
-def test_repr(
-    simple_int, simple_float, simple_none,
-    int_list, float_list, int_float_dict, complex_dict, int_float_union,
-    optional_int, optional_int_list, dynamic_dict
-):
-    assert str(simple_int) == 'int'
-    assert str(simple_float) == 'float'
-    assert str(simple_none) == 'None'
-    assert str(int_list) == 'List[int]'
-    assert str(float_list) == 'List[float]'
-    assert str(int_float_dict) == "Dict[{'a': int, 'b': float}]"
-    assert str(dynamic_dict) == "DynamicDict[{'a': int, 'b': float}]"
-    assert str(
-        complex_dict) == "Dict[{'a': int, 'b': List[float], 'c': Dict[{'a': str, 'b': Optional[int]}]}]"
-    assert str(int_float_union) == 'Union[int,float]'
-    assert str(simple_float | simple_int) == 'Union[int,float]'
-    assert str(simple_float | int_list) == 'Union[List[int],float]'
-    assert str(optional_int) == 'Optional[int]'
-    assert str(optional_int_list) == 'Optional[List[int]]'
-    assert str(Optional(int_float_dict)
-               ) == "Optional[Dict[{'a': int, 'b': float}]]"
-    assert str(Unknown()) == '?'
-
+def test_repr():
+    for schema_str in [
+        'Simple(int)',
+        'Simple(float)',
+        'List(Simple(int))',
+        "Dict({'a': Simple(int), 'b': Simple(float)})",
+        "Dict({'a': Simple(int), 'b': List(Simple(float))})",
+        'Optional(Simple(int))',
+        'Union({Simple(int), Simple(float)})',
+        "DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 4, 'b': 2}))",
+        "Unknown()"
+    ]:
+        assert str(eval(schema_str)) == schema_str
 
 def test_equal(
     simple_int, simple_float, simple_none,
@@ -148,9 +132,7 @@ def test_union(
                                               'b': Simple(float)}) == Dict({'a': Optional(Simple(int)),
                                                                             'b': Simple(float)})
     assert Dict({'a': Simple(int), 'b': Simple(float)}) | Dict(
-        {'a': Simple(int)}) == DynamicDict({'a': Simple(int), 'b': Simple(float)})
-    assert Dict({'a': Simple(int)}) | Dict({'a': Simple(int), 'b': Simple(
-        float)}) == DynamicDict({'a': Simple(int), 'b': Simple(float)})
+        {'a': Simple(int)}) == DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 2, 'b': 1}))
 
 
 def test_set(simple_int, simple_float, simple_none,
@@ -169,14 +151,14 @@ def test_set(simple_int, simple_float, simple_none,
     assert len({Optional(simple_float), List(
         simple_float), UniformDict(simple_float)}) == 3
     assert Union.set([Dict({'a': Simple(int)}), Dict({'a': Simple(int), 'b': Simple(
-        float)})]) == DynamicDict({'a': Simple(int), 'b': Simple(float)})
+        float)})]) == DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 2, 'b': 1}))
     assert Union.set([Simple(None), Dict({'a': Simple(int)})]) == Optional(
         Dict({'a': Simple(int)}))
     assert Union.set([Simple(None),
                       Dict({'a': Simple(int)}),
                       Dict({'a': Simple(int),
                             'b': Simple(float)})]) == Optional(DynamicDict({'a': Simple(int),
-                                                                            'b': Simple(float)}))
+                                                                            'b': Simple(float)}, Counter({'a': 2, 'b': 1})))
 
 
 def test_to_uniform_dict(int_float_dict, simple_int, simple_float):
