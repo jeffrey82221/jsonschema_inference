@@ -1,7 +1,7 @@
 import pytest
 import copy
 from collections import Counter
-from common.schema.objs import Simple, List, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
+from jsonschema_inference.schema.objs import Simple, List, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
 
 
 @pytest.fixture()

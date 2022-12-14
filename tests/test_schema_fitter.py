@@ -1,5 +1,5 @@
-from common.schema.objs import Dict, List, Simple, Optional, Union, UniformDict, Unknown
-from common.schema.fitter import fit, try_unify_dict
+from jsonschema_inference.schema.objs import Dict, List, Simple, Optional, Union, UniformDict, Unknown
+from jsonschema_inference.schema.fitter import fit, try_unify_dict
 
 
 def test_fit():
