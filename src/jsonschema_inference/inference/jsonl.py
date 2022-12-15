@@ -1,5 +1,9 @@
 """
 A Json schema builder from multiple strutured Json files
+
+Refactor: 
+- [ ] alter the multi-processing method by seperate jsonl into multiple files and execute parallelly
+ using pypy
 """
 import typing
 import tqdm
