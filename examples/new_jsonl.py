@@ -5,17 +5,19 @@ import json
 import tqdm
 from jsonschema_inference.schema import InferenceEngine
 
-JSONL_PATH = 'kaggle/data/test.jsonl'
+JSONL_PATH = 'data/kaggle_data/test.jsonl'
 
 def split_file(count):
     out = subprocess.check_output(['wc', '-l', JSONL_PATH])
     cnt = int(out.decode("utf-8").split(JSONL_PATH)[0])
-    print(cnt)
-    if not os.path.exists('split'):
-        os.mkdir('split')
+    if not os.path.exists('/tmp/split'):
+        os.mkdir('/tmp/split')
     json_cnt_per_file = int(cnt/count)
-    subprocess.run(['split', '-l', str(json_cnt_per_file), JSONL_PATH, 'split/'])
+    subprocess.run(['split', '-l', str(json_cnt_per_file), JSONL_PATH, '/tmp/split/'])
     return json_cnt_per_file
+
+def run_split_files():
+    subprocess.run(['rm', '-r', '/tmp/split'])
 
 def get_schema(jsonl_path, total, verbose=True):
     with open(jsonl_path, 'r') as f:
@@ -29,5 +31,6 @@ def get_schema(jsonl_path, total, verbose=True):
 
 if __name__ == '__main__':
     json_cnt_per_file = split_file(10)
-    schema = get_schema('split/aa', total=json_cnt_per_file, verbose=True)
+    schema = get_schema('/tmp/split/aa', total=json_cnt_per_file, verbose=True)
     pprint.pprint(schema)
+    run_split_files()
