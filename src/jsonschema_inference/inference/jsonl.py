@@ -23,6 +23,7 @@ def get_schema_remotely(jsonl_path, verbose=True, position=0):
         schema = InferenceEngine.get_schema(json_pipe)
     return schema
 
+
 class JsonlInferenceEngine:
     """
     Args:
@@ -56,6 +57,7 @@ class JsonlInferenceEngine:
         self._split_jsonl(self._inference_worker_cnt)
         schemas = []
         self._remote_gateways = []
+
         def layered_get_schema(i, filename):
             if self._engine == 'pypy':
                 gw, decorated_get_schema = remote.pypy(get_schema_remotely)
@@ -74,7 +76,7 @@ class JsonlInferenceEngine:
                 split_file_paths)
             # construct the threads
             self.threads = [Thread(target=layered_get_schema, args=(i, filename))
-                       for i, filename in enumerate(split_file_pipe)]
+                            for i, filename in enumerate(split_file_pipe)]
             # start the threads
             for thread in self.threads:
                 thread.daemon = False
@@ -90,18 +92,18 @@ class JsonlInferenceEngine:
             raise e
         finally:
             self._graceful_exit()
-            
+
     def _graceful_exit(self, signal=None, frame=None):
         print(f'graceful exited due to {signal} on {frame}')
         self.__stop_gateways()
         self.__remove_split_files()
         os._exit(0)
-    
+
     def __stop_gateways(self):
         for gw in self._remote_gateways:
             try:
                 gw.exit()
-            except:
+            except BaseException:
                 pass
         print(f'remote gateways stopped')
 
@@ -119,9 +121,6 @@ class JsonlInferenceEngine:
         subprocess.run(['split', '-l', str(json_cnt_per_file),
                        self.jsonl_path, self._split_path + '/'])
         return json_cnt_per_file
-
-    
-        
 
     @property
     def _split_path(self):

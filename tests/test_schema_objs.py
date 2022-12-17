@@ -39,6 +39,7 @@ def complex_dict():
     return Dict({'a': Simple(int), 'b': List(Simple(float)), 'c': Dict(
         {'a': Simple(str), 'b': Optional(Simple(int))})})
 
+
 @pytest.fixture()
 def int_float_union():
     return Union({Simple(int), Simple(float)})
@@ -53,6 +54,7 @@ def optional_int():
 def optional_int_list():
     return Optional(List(Simple(int)))
 
+
 def test_repr():
     for schema_str in [
         'Simple(int)',
@@ -66,6 +68,7 @@ def test_repr():
         "Unknown()"
     ]:
         assert str(eval(schema_str)) == schema_str
+
 
 def test_equal(
     simple_int, simple_float, simple_none,
