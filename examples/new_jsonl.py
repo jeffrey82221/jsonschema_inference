@@ -3,7 +3,7 @@ import subprocess
 import pprint
 import json
 import tqdm
-from jsonschema_inference.schema import InferenceEngine
+from remote import pypy, python
 
 JSONL_PATH = 'data/kaggle_data/test.jsonl'
 
@@ -19,9 +19,11 @@ def split_file(count):
 def run_split_files():
     subprocess.run(['rm', '-r', '/tmp/split'])
 
-def get_schema(jsonl_path, total, verbose=True):
+@pypy
+def get_schema(jsonl_path, verbose=True):
+    from jsonschema_inference.schema import InferenceEngine
+    total = sum(1 for _ in open(jsonl_path, 'r'))
     with open(jsonl_path, 'r') as f:
-        
         json_pipe = map(json.loads, f)
         if verbose:
             json_pipe = tqdm.tqdm(
@@ -30,7 +32,7 @@ def get_schema(jsonl_path, total, verbose=True):
     return schema
 
 if __name__ == '__main__':
-    json_cnt_per_file = split_file(10)
-    schema = get_schema('/tmp/split/aa', total=json_cnt_per_file, verbose=True)
+    _ = split_file(10)
+    schema = get_schema('/tmp/split/aa', verbose=True)
     pprint.pprint(schema)
     run_split_files()
