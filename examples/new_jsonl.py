@@ -26,15 +26,15 @@ class JsonlInferenceEngine:
     """
     Args:
         - inference_worker_cnt: number of processes inferencing the json schema
-        - engine: the python engine for executing the inference process (pypy or python)
         - tmp_dir: the path to store the splitted jsonl files. 
     Methods to be overide:
         - jsonl_path: path to the jsonl file.
     """
-    def __init__(self, inference_worker_cnt=8, engine='pypy', tmp_dir='/tmp'):
+    def __init__(self, inference_worker_cnt=8, tmp_dir='/tmp'):
         self._inference_worker_cnt = inference_worker_cnt
-        self._engine = engine
         self._tmp_dir = tmp_dir
+        # NOTE: Whether the engine is pypy or python depends on how the code is executed 
+        self._engine = 'pypy' # or python
         signal.signal(signal.SIGTERM, self._remove_split_files)
         signal.signal(signal.SIGINT, self._remove_split_files)
 
@@ -44,6 +44,12 @@ class JsonlInferenceEngine:
         raise NotImplementedError
 
     def get_schema(self, verbose=True):
+        if self._inference_worker_cnt == 1:
+            return get_schema_remotely(self.jsonl_path, verbose=verbose)
+        else:
+            return self.get_schema_parallel(verbose=verbose)
+
+    def get_schema_parallel(self, verbose=True):
         self._split_jsonl(self._inference_worker_cnt)
         schemas = []
         def layered_get_schema(i, filename):
@@ -91,7 +97,8 @@ class JsonlInferenceEngine:
         if os.path.exists(self._split_path):
             subprocess.run(['rm', '-r', self._split_path])
             print(self._split_path, 'removed')
-
+        os._exit(1)
+        
     @property
     def _split_path(self):
         return os.path.join(self._tmp_dir, 'split')
@@ -103,6 +110,6 @@ class Engine(JsonlInferenceEngine):
         return 'data/kaggle_data/test.jsonl'
 
 if __name__ == '__main__':
-    engine = Engine()
+    engine = Engine(inference_worker_cnt=1)
     schema = engine.get_schema(verbose=True)
     pprint.pprint(schema)
