@@ -3,7 +3,9 @@ import subprocess
 import pprint
 import json
 import tqdm
+from threading import Thread
 from remote import pypy, python
+
 
 JSONL_PATH = 'data/kaggle_data/test.jsonl'
 
@@ -19,7 +21,6 @@ def split_file(count):
 def run_split_files():
     subprocess.run(['rm', '-r', '/tmp/split'])
 
-@pypy
 def get_schema(jsonl_path, verbose=True):
     from jsonschema_inference.schema import InferenceEngine
     total = sum(1 for _ in open(jsonl_path, 'r'))
@@ -27,12 +28,28 @@ def get_schema(jsonl_path, verbose=True):
         json_pipe = map(json.loads, f)
         if verbose:
             json_pipe = tqdm.tqdm(
-                json_pipe, total=total)
+                json_pipe, total=total, desc=jsonl_path)
         schema = InferenceEngine.get_schema(json_pipe)
     return schema
 
 if __name__ == '__main__':
-    _ = split_file(10)
-    schema = get_schema('/tmp/split/aa', verbose=True)
-    pprint.pprint(schema)
+    _ = split_file(8)
+    files = os.listdir('/tmp/split')
+    pprint.pprint(files)
+    schemas = []
+    def layered_get_schema(filename):
+        schema = pypy(get_schema)(filename, verbose=True)
+        schemas.append(schema)
+    # construct the threads
+    threads = [Thread(target=layered_get_schema, args=(filename, ))
+            for filename in map(lambda file: f'/tmp/split/{file}', files)]
+    # start the threads
+    for thread in threads:
+        thread.start()
+
+    # wait for the threads to complete
+    for thread in threads:
+        schema = thread.join()
+
+    pprint.pprint(schemas)
     run_split_files()
