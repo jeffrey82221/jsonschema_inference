@@ -6,8 +6,6 @@ from jsonschema_inference.schema.objs import *
 def build_remote(gw, function, engine='pypy'):
     func_name = function.__name__
     consumer_str = f"""
-import json
-import tqdm
 {inspect.getsource(function)}
 args, kwargs = channel.receive()
 channel.send(repr({func_name}(*args, **kwargs)))
