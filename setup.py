@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    
-    name="jsonschema-inference", # Replace with your username
+
+    name="jsonschema-inference",  # Replace with your username
 
     version="0.0.0",
 
@@ -23,7 +23,7 @@ setuptools.setup(
     url="https://github.com/jeffrey82221/jsonschema_inference",
 
     packages=['jsonschema_inference'],
-    package_dir={'':'src'},
+    package_dir={'': 'src'},
 
     classifiers=[
 
