@@ -5,6 +5,7 @@ Refactor:
 - [ ] alter the multi-processing method by seperate jsonl into multiple files and execute parallelly
  using pypy
 """
+import abc
 import typing
 import tqdm
 from multiprocessing.pool import ThreadPool
@@ -16,6 +17,13 @@ __all__ = ['JsonlInferenceEngine']
 
 
 class JsonlInferenceEngine:
+    """
+    Args:
+        - inference_worker_cnt: number of processes inferencing the json schema
+        - json_per_worker: number of json files an inference worker takes as input
+    Methods to be overide:
+        - jsonl_path: path to the jsonl file.
+    """
     def __init__(self, inference_worker_cnt=8, json_per_worker=10000):
         self._inference_worker_cnt = inference_worker_cnt
         if self._inference_worker_cnt > 1:
@@ -25,7 +33,7 @@ class JsonlInferenceEngine:
             self.Pool = ThreadPool
         self._json_per_worker = json_per_worker
 
-    @property
+    @abc.abstractproperty
     def jsonl_path(self):
         raise NotImplementedError
 
