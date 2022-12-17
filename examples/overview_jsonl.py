@@ -3,7 +3,7 @@ Get schema of jsonl
 & develop analysis platform on it.
 """
 import pprint
-from common.inference import JsonlInferenceEngine
+from jsonschema_inference.inference import JsonlInferenceEngine
 
 
 class Engine(JsonlInferenceEngine):
@@ -12,7 +12,7 @@ class Engine(JsonlInferenceEngine):
         return 'data/small_test.jsonl'
 
 
-schema = Engine(inference_worker_cnt=1, json_per_worker=1).get_schema()
+schema = Engine(inference_worker_cnt=1).get_schema()
 pprint.pprint(schema)
 
 
@@ -22,5 +22,5 @@ class TestEngine(JsonlInferenceEngine):
         return 'data/kaggle_data/test.jsonl'
 
 
-schema = TestEngine(inference_worker_cnt=8, json_per_worker=10000).get_schema()
+schema = TestEngine(inference_worker_cnt=4).get_schema()
 pprint.pprint(schema)

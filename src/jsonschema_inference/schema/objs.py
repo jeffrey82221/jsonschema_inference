@@ -3,19 +3,6 @@ Json Schema Objects
 that supports union operations
 
 TODO:
-- [X] Set operation of JsonSchema(s) (defined as staticmethod of Union)
-    - converting a list of JsonSchemas into one schema.
-- [X] UniformDict build
-- [X] A SchemaFitter that infer Schema from Json(s)
-- [X] Consider empty list in schema objs / fitter
-- [X] Add DynamicDict object to represent dictionary with changing of keys
-- [X] Add content counting data content to DynamicDict as addition to ._content
-    (
-        1. We can count the occurrence of key.
-        2. We can represent the objects as tuple appearance count.
-            e.g., DynamicDict[{'apple' (120): str, 'banana' (123): str, ..., 'car' (1): str}]
-        3. Allow counter to be added together
-    )
 - [ ] Allow another DynamicDict to capture mandatory fields & co-occurrence relationship between fields
 - [ ] Enable representing the __init__ of DynamicDict (same as other schema types)
 """
@@ -153,7 +140,7 @@ class Union(JsonSchema):
                 e, JsonSchema), 'Union content elements should be JsonSchema'
 
     def __repr__(self):
-        content_str = ','.join(map(str, list(self._content)))
+        content_str = ', '.join(map(str, list(self._content)))
         content_str = '{' + content_str + '}'
         return f'Union({content_str})'
 
@@ -261,12 +248,7 @@ class DynamicDict(Dict):
         self._key_counter = key_counter
 
     def __repr__(self):
-        content_strs = []
-        for key, cnt in self._key_counter.most_common(10):
-            content_strs.append(f'("{key}", {cnt}): {self._content[key]}')
-        content_whole_str = ','.join(content_strs)
-        content_whole_str = '{' + content_whole_str + '}'
-        return f'DynamicDict({content_whole_str})'
+        return f'DynamicDict({self._content}, {self._key_counter})'
 
     def __hash__(self):
         return hash(tuple(sorted(self._content.items()))) + \

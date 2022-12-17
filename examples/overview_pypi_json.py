@@ -2,7 +2,7 @@
 Overview pypi json file
 """
 import typing
-from common.inference import APIInferenceEngine
+from jsonschema_inference.inference import APIInferenceEngine
 
 
 class PypiPackageSchemaInferencer(APIInferenceEngine):
