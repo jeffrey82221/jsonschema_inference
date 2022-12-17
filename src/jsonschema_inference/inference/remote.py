@@ -1,7 +1,7 @@
 import execnet
 import inspect
 from functools import wraps
-from jsonschema_inference.schema.objs import *
+from ..schema.objs import *
 
 
 def build_remote(gw, function, engine='pypy'):
@@ -28,11 +28,11 @@ def pypy(func):
     gw = execnet.makegateway("popen// pypy3")
     channel = build_remote(gw, func, engine='pypy')
     wrapped_func = wrap(func, channel)
-    return wrapped_func
+    return gw, wrapped_func
 
 
 def python(func):
     gw = execnet.makegateway("popen// python")
     channel = build_remote(gw, func, engine='python')
     wrapped_func = wrap(func, channel)
-    return wrapped_func
+    return gw, wrapped_func
