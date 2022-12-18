@@ -14,7 +14,8 @@ class PypiPackageSchemaInferencer(APIInferenceEngine):
             inference_worker_cnt=inference_worker_cnt,
             json_per_worker=json_per_worker,
             cuckoo_dump=cuckoo_dump,
-            schema_dump=schema_dump
+            schema_dump=schema_dump,
+            jsonl_dump='data/archive.jsonl'
         )
 
     def index_generator(self) -> typing.Iterable[str]:

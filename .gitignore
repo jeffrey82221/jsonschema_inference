@@ -1,6 +1,6 @@
 *.pickle
 .DS_Store
-examples/data/kaggle_data
+examples/data/archive.jsonl
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

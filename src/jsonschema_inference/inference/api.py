@@ -46,6 +46,7 @@ import typing
 import requests
 import tqdm
 from multiprocessing.pool import ThreadPool
+import json as json_package
 from ..schema.objs import JsonSchema
 from ..schema import InferenceEngine
 
@@ -69,7 +70,7 @@ class APIInferenceEngine:
     """
 
     def __init__(self, api_thread_cnt=1000, inference_worker_cnt=4, json_per_worker=1000,
-                 cuckoo_dump='cuckoo.pickle', schema_dump='schema.pickle'):
+                 cuckoo_dump='cuckoo.pickle', schema_dump='schema.pickle', jsonl_dump=None):
         self._api_thread_cnt = api_thread_cnt
         self._inference_worker_cnt = inference_worker_cnt
         if self._inference_worker_cnt > 1:
@@ -84,6 +85,13 @@ class APIInferenceEngine:
             self._index_filter, dump_file_path=schema_dump)
         self._register_graceful_exist(
             [self._index_filter, self._schema_holder])
+        self._jsonl_dump = jsonl_dump
+        if self._jsonl_dump is not None:
+            self._jsonl_index_filter = IndexCuckooFilter(
+                self.index_generator, dump_file_path='jsonl_cuckoo.pickle'
+            )
+            self._jsonl_saver = JsonlSaver(self._jsonl_index_filter, archieve_file_path=jsonl_dump)
+            self._register_graceful_exist([self._jsonl_index_filter])
 
     def _register_graceful_exist(self, objs):
         def do_exit(*args):
@@ -140,6 +148,12 @@ class APIInferenceEngine:
                     # Remove errorneous Json
                     json_index_name_pipe = self.filter_errorneous_json(
                         json_index_name_pipe)
+
+                    # Saving json into jsonl file
+                    if self._jsonl_dump is not None:
+                        json_index_name_pipe = self._jsonl_saver.save(json_index_name_pipe)    
+                    
+                    # Convert to batch-wise pipe
                     json_index_name_batch_pipe = InferenceEngine._batchwise_generator(
                         json_index_name_pipe, batch_size=self._json_per_worker)
 
@@ -162,6 +176,8 @@ class APIInferenceEngine:
             # Saving the final schema and process record as Pickles
             self._schema_holder.save()
             self._index_filter.save()
+            if self._jsonl_dump is not None:
+                self._jsonl_index_filter.save()
 
     @staticmethod
     def _th_run(instance):
@@ -200,8 +216,13 @@ class APIInferenceEngine:
 class IndexCuckooFilter:
     """
     Filter out index whose json schema
-    has already been inference and captured into the
-    final union json schema
+    has already been captured in the downstream pipeline.
+
+    Args:
+        - index_gen_builder: a function that produce a index generator which help IndexCuckooFilter to 
+            construct the index set. 
+        - dump_file_path: the path to store the index set status information. 
+        - error_rate: the error rate of identifying an non-existing item in the set.
     """
 
     def __init__(self, index_gen_builder=typing.Callable[[
@@ -259,6 +280,27 @@ class IndexCuckooFilter:
         with open(self._dump_file_path, 'wb') as handle:
             pickle.dump(self._cuckoo, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print(f'{self._dump_file_path} Saved')
+
+class JsonlSaver:
+    """
+    This class enable saving the json(s) into a archive jsonl file.
+    """
+    def __init__(self, cuckoo_filter: IndexCuckooFilter, archieve_file_path='archieve.jsonl'):
+        self._cuckoo_filter = cuckoo_filter
+        self._archieve_file_path = archieve_file_path
+    def save(self, json_index_producer: typing.Iterable[typing.Tuple[str, dict]]):
+        """
+        Check and save the passing index-json tuple
+        """
+        with open(self._archieve_file_path, 'w') as f:
+            for json, index in json_index_producer:
+                if self._cuckoo_filter._cuckoo.contains(index):
+                    f.write(json_package.dumps(json))
+                    f.write('\n')
+                    self._cuckoo_filter.remove(index)
+                else:
+                    pass
+                yield json, index
 
 
 class SchemaReducer:
