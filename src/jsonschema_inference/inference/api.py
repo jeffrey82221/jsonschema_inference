@@ -111,7 +111,11 @@ class APIInferenceEngine:
 
     @abc.abstractmethod
     def is_valid_json(self, json_dict: typing.Dict) -> bool:
-        raise NotImplementedError
+        return True
+    
+    @property
+    def count(self):
+        return sum(1 for _ in self.index_generator())
 
     def get_schema(self, verbose=True):
         """
