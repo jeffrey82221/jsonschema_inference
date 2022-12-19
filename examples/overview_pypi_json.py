@@ -21,16 +21,11 @@ class PypiPackageSchemaInferencer(APIInferenceEngine):
 
     def index_generator(self) -> typing.Iterable[str]:
         with open('data/package_names.txt', 'r') as f:
-            first_alpha = '0'
             for i, pkg in enumerate(map(lambda p: p.strip(), f)):
                 if self._limit is not None:
                     if i > self._limit:
                         break
-                if pkg[0] == first_alpha:
-                    pass
-                else:
-                    yield pkg
-                    first_alpha = pkg[0]
+                yield pkg
 
     def get_url(self, pkg: str) -> str:
         url = f'https://pypi.org/pypi/{pkg}/json'
@@ -41,7 +36,7 @@ class PypiPackageSchemaInferencer(APIInferenceEngine):
 
 
 if __name__ == '__main__':
-    p = PypiPackageSchemaInferencer(json_per_worker=1, inference_worker_cnt=1)
+    p = PypiPackageSchemaInferencer()
     print('number of json:', p.count)
     schema = p.get_schema()
     pprint.pprint(schema)
