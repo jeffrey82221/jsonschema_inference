@@ -4,13 +4,13 @@ from .array import Array
 
 
 __all__ = [
-    'JsonSchema'
-    'Atomic',
-    'Array',
-    'Union',
-    'Record',
-    'Optional',
-    'UniformRecord',
+    'JsonSchema',
     'Unknown',
+    'Atomic',
+    'Union',
+    'Optional',
+    'Array',
+    'Record',
+    'UniformRecord',
     'DynamicRecord'
 ]
