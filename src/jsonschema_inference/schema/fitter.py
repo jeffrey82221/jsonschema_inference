@@ -1,4 +1,4 @@
-from .objs import Dict, Array, Atomic, Union
+from .objs import Record, Array, Atomic, Union
 
 
 def fit(data, unify_callback=None):
@@ -9,7 +9,7 @@ def fit(data, unify_callback=None):
                 data[key],
                 unify_callback=unify_callback
             )
-        schema = Dict(schema_content)
+        schema = Record(schema_content)
         if unify_callback is not None:
             schema = unify_callback(schema)
     elif isinstance(data, list):
@@ -23,7 +23,7 @@ def fit(data, unify_callback=None):
 
 def try_unify_dict(dict_schema):
     uni_dict = dict_schema.to_uniform_dict()
-    if isinstance(uni_dict._content, Dict) or isinstance(
+    if isinstance(uni_dict._content, Record) or isinstance(
             uni_dict._content, Array):
         return uni_dict
     else:

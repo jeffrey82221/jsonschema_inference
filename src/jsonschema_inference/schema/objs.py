@@ -15,11 +15,11 @@ __all__ = [
     'Atomic',
     'Array',
     'Union',
-    'Dict',
+    'Record',
     'Optional',
-    'UniformDict',
+    'UniformRecord',
     'Unknown',
-    'DynamicDict'
+    'DynamicRecord'
 ]
 
 
@@ -185,27 +185,27 @@ class Optional(Union):
             return result
 
 
-class Dict(JsonSchema):
+class Record(JsonSchema):
     def __init__(self, content: dict):
         super().__init__(content)
 
     def check_content(self):
-        assert isinstance(self._content, dict), 'Dict content should be dict'
+        assert isinstance(self._content, dict), 'Record content should be dict'
         for key in self._content:
-            assert isinstance(key, str), 'Dict content key should be str'
+            assert isinstance(key, str), 'Record content key should be str'
             assert isinstance(
-                self._content[key], JsonSchema), 'Dict content value should be JsonSchema'
+                self._content[key], JsonSchema), 'Record content value should be JsonSchema'
 
     def __repr__(self):
-        return f'Dict({self._content})'
+        return f'Record({self._content})'
 
     def __hash__(self):
         return hash(tuple(sorted(self._content.items())))
 
     def __or__(self, e):
-        if isinstance(e, DynamicDict):
+        if isinstance(e, DynamicRecord):
             return e | self
-        elif isinstance(e, Dict):
+        elif isinstance(e, Record):
             old = copy.deepcopy(self)
             new = copy.deepcopy(e)
             if old._content.keys() == new._content.keys():
@@ -227,17 +227,17 @@ class Dict(JsonSchema):
                     key_counter[key] += 1
                 for key in new._content.keys():
                     key_counter[key] += 1
-                return DynamicDict(result_dict, key_counter)
+                return DynamicRecord(result_dict, key_counter)
         else:
             return self._base_or(e)
 
     def to_uniform_dict(self):
         schemas = [v for v in self._content.values()]
         uniform_content = Union.set(schemas)
-        return UniformDict(uniform_content)
+        return UniformRecord(uniform_content)
 
 
-class DynamicDict(Dict):
+class DynamicRecord(Record):
     """
     Dictionary where keys are not strict
     (some keys can be optional)
@@ -248,7 +248,7 @@ class DynamicDict(Dict):
         self._key_counter = key_counter
 
     def __repr__(self):
-        return f'DynamicDict({self._content}, {self._key_counter})'
+        return f'DynamicRecord({self._content}, {self._key_counter})'
 
     def __hash__(self):
         return hash(tuple(sorted(self._content.items()))) + \
@@ -256,7 +256,7 @@ class DynamicDict(Dict):
 
     def __or__(self, e):
         result_dict = dict()
-        if isinstance(e, DynamicDict):
+        if isinstance(e, DynamicRecord):
             old = copy.deepcopy(self)
             new = copy.deepcopy(e)
             for key in set(list(old._content.keys()) +
@@ -267,9 +267,9 @@ class DynamicDict(Dict):
                     result_dict[key] = old._content[key]
                 elif key in new._content:
                     result_dict[key] = new._content[key]
-            return DynamicDict(
+            return DynamicRecord(
                 result_dict, old._key_counter + new._key_counter)
-        elif isinstance(e, Dict):
+        elif isinstance(e, Record):
             old = copy.deepcopy(self)
             new = copy.deepcopy(e)
             for key in set(list(old._content.keys()) +
@@ -282,12 +282,12 @@ class DynamicDict(Dict):
                     result_dict[key] = new._content[key]
             for key in new._content.keys():
                 old._key_counter[key] += 1
-            return DynamicDict(result_dict, old._key_counter)
+            return DynamicRecord(result_dict, old._key_counter)
         else:
             return self._base_or(e)
 
 
-class UniformDict(JsonSchema):
+class UniformRecord(JsonSchema):
     """
     Dictionary where value elements
     are united into a JsonSchema.
@@ -298,15 +298,15 @@ class UniformDict(JsonSchema):
 
     def check_content(self):
         assert isinstance(
-            self._content, JsonSchema), f'UniformDict content should be JsonSchema, but it is {self._content}'
+            self._content, JsonSchema), f'UniformRecord content should be JsonSchema, but it is {self._content}'
 
     def __repr__(self):
-        return f'UniformDict({self._content})'
+        return f'UniformRecord({self._content})'
 
     def __or__(self, e):
-        if isinstance(e, UniformDict):
+        if isinstance(e, UniformRecord):
             new = copy.deepcopy(e)
             old = copy.deepcopy(self)
-            return UniformDict(old._content | new._content)
+            return UniformRecord(old._content | new._content)
         else:
             return self._base_or(e)

@@ -39,10 +39,10 @@ union are represented by `+` and `*` symbol:
 	-  [ ] label equivalence:
 		-  [ ] Turn off `DynamicDict` (Dict with different labels should be merged into `Union` of Dict(s))
 - [ ] Construction of UniformDict should be optional, too. 
-- [ ] Try to imitate the json schema of the paper
-	- [ ] `Simple` -> `Atomic`
-	- [ ] `Dict` -> `Record`
-	- [ ] `List` -> `Array`
+- [X] Try to imitate the json schema of the paper
+	- [X] `Simple` -> `Atomic`
+	- [X] `Dict` -> `Record`
+	- [X] `List` -> `Array`
 - [ ] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
 - [ ] Extract a `SpeedInferenceEngine` for `APIInfernceEngine` & `JsonlInferenceEngine`. 
 - [ ] `ViewDataClass` for Jsonl:

@@ -1,7 +1,7 @@
 import pytest
 import copy
 from collections import Counter
-from jsonschema_inference.schema.objs import Atomic, Array, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
+from jsonschema_inference.schema.objs import Atomic, Array, Record, Union, Optional, UniformRecord, Unknown, DynamicRecord
 
 
 @pytest.fixture()
@@ -31,12 +31,12 @@ def float_list():
 
 @pytest.fixture()
 def int_float_dict():
-    return Dict({'a': Atomic(int), 'b': Atomic(float)})
+    return Record({'a': Atomic(int), 'b': Atomic(float)})
 
 
 @pytest.fixture()
 def complex_dict():
-    return Dict({'a': Atomic(int), 'b': Array(Atomic(float)), 'c': Dict(
+    return Record({'a': Atomic(int), 'b': Array(Atomic(float)), 'c': Record(
         {'a': Atomic(str), 'b': Optional(Atomic(int))})})
 
 
@@ -60,11 +60,11 @@ def test_repr():
         'Atomic(int)',
         'Atomic(float)',
         'Array(Atomic(int))',
-        "Dict({'a': Atomic(int), 'b': Atomic(float)})",
-        "Dict({'a': Atomic(int), 'b': Array(Atomic(float))})",
+        "Record({'a': Atomic(int), 'b': Atomic(float)})",
+        "Record({'a': Atomic(int), 'b': Array(Atomic(float))})",
         'Optional(Atomic(int))',
         'Union({Atomic(int), Atomic(float)})',
-        "DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 4, 'b': 2}))",
+        "DynamicRecord({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 4, 'b': 2}))",
         "Unknown()"
     ]:
         assert str(eval(schema_str)) == schema_str
@@ -128,14 +128,14 @@ def test_union(
         Optional(
             Atomic(float))) == Array(
         Optional(simple_float))
-    assert Dict({'a': Atomic(int), 'b': Atomic(float)}) | Dict({'a': Atomic(
-        int), 'b': Atomic(float)}) == Dict({'a': Atomic(int), 'b': Atomic(float)})
-    assert Dict({'a': Atomic(int),
-                 'b': Atomic(float)}) | Dict({'a': Atomic(None),
-                                              'b': Atomic(float)}) == Dict({'a': Optional(Atomic(int)),
+    assert Record({'a': Atomic(int), 'b': Atomic(float)}) | Record({'a': Atomic(
+        int), 'b': Atomic(float)}) == Record({'a': Atomic(int), 'b': Atomic(float)})
+    assert Record({'a': Atomic(int),
+                 'b': Atomic(float)}) | Record({'a': Atomic(None),
+                                              'b': Atomic(float)}) == Record({'a': Optional(Atomic(int)),
                                                                             'b': Atomic(float)})
-    assert Dict({'a': Atomic(int), 'b': Atomic(float)}) | Dict(
-        {'a': Atomic(int)}) == DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
+    assert Record({'a': Atomic(int), 'b': Atomic(float)}) | Record(
+        {'a': Atomic(int)}) == DynamicRecord({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
 
 
 def test_set(simple_int, simple_float, simple_none,
@@ -152,18 +152,18 @@ def test_set(simple_int, simple_float, simple_none,
     assert len({Optional(simple_int), Array(simple_int)}) == 2
     assert len({Array(simple_int), Array(simple_int)}) == 1
     assert len({Optional(simple_float), Array(
-        simple_float), UniformDict(simple_float)}) == 3
-    assert Union.set([Dict({'a': Atomic(int)}), Dict({'a': Atomic(int), 'b': Atomic(
-        float)})]) == DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
-    assert Union.set([Atomic(None), Dict({'a': Atomic(int)})]) == Optional(
-        Dict({'a': Atomic(int)}))
+        simple_float), UniformRecord(simple_float)}) == 3
+    assert Union.set([Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(
+        float)})]) == DynamicRecord({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
+    assert Union.set([Atomic(None), Record({'a': Atomic(int)})]) == Optional(
+        Record({'a': Atomic(int)}))
     assert Union.set([Atomic(None),
-                      Dict({'a': Atomic(int)}),
-                      Dict({'a': Atomic(int),
-                            'b': Atomic(float)})]) == Optional(DynamicDict({'a': Atomic(int),
+                      Record({'a': Atomic(int)}),
+                      Record({'a': Atomic(int),
+                            'b': Atomic(float)})]) == Optional(DynamicRecord({'a': Atomic(int),
                                                                             'b': Atomic(float)}, Counter({'a': 2, 'b': 1})))
 
 
 def test_to_uniform_dict(int_float_dict, simple_int, simple_float):
-    assert int_float_dict.to_uniform_dict() == UniformDict(
+    assert int_float_dict.to_uniform_dict() == UniformRecord(
         Union({simple_int, simple_float}))
