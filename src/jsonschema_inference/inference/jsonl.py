@@ -49,9 +49,10 @@ class JsonlInferenceEngine:
 
     def get_schema(self, verbose=True):
         if self._inference_worker_cnt == 1:
-            return get_schema_remotely(self.jsonl_path, verbose=verbose)
+            result = get_schema_remotely(self.jsonl_path, verbose=verbose)
         else:
-            return self.get_schema_parallel(verbose=verbose)
+            result = self.get_schema_parallel(verbose=verbose)
+        return result
 
     def get_schema_parallel(self, verbose=True):
         self._split_jsonl(self._inference_worker_cnt)
@@ -87,16 +88,21 @@ class JsonlInferenceEngine:
                 th = self.threads[i]
                 self.threads[i] = None
                 del th
-            return Union.set(schemas)
+            result = Union.set(schemas)
+            return result
         except BaseException as e:
             raise e
         finally:
-            self._graceful_exit()
+            self._exit()
 
-    def _graceful_exit(self, signal=None, frame=None):
-        print(f'graceful exited due to {signal} on {frame}')
+    def _exit(self):
         self.__stop_gateways()
         self.__remove_split_files()
+        print('exit')
+
+    def _graceful_exit(self, signal=None, frame=None):
+        self._exit()
+        print(f'graceful exited')
         os._exit(0)
 
     def __stop_gateways(self):
