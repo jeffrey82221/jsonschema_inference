@@ -1,70 +1,70 @@
 import pytest
 import copy
 from collections import Counter
-from jsonschema_inference.schema.objs import Simple, List, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
+from jsonschema_inference.schema.objs import Atomic, List, Dict, Union, Optional, UniformDict, Unknown, DynamicDict
 
 
 @pytest.fixture()
 def simple_int():
-    return Simple(int)
+    return Atomic(int)
 
 
 @pytest.fixture()
 def simple_float():
-    return Simple(float)
+    return Atomic(float)
 
 
 @pytest.fixture()
 def simple_none():
-    return Simple(None)
+    return Atomic(None)
 
 
 @pytest.fixture()
 def int_list():
-    return List(Simple(int))
+    return List(Atomic(int))
 
 
 @pytest.fixture()
 def float_list():
-    return List(Simple(float))
+    return List(Atomic(float))
 
 
 @pytest.fixture()
 def int_float_dict():
-    return Dict({'a': Simple(int), 'b': Simple(float)})
+    return Dict({'a': Atomic(int), 'b': Atomic(float)})
 
 
 @pytest.fixture()
 def complex_dict():
-    return Dict({'a': Simple(int), 'b': List(Simple(float)), 'c': Dict(
-        {'a': Simple(str), 'b': Optional(Simple(int))})})
+    return Dict({'a': Atomic(int), 'b': List(Atomic(float)), 'c': Dict(
+        {'a': Atomic(str), 'b': Optional(Atomic(int))})})
 
 
 @pytest.fixture()
 def int_float_union():
-    return Union({Simple(int), Simple(float)})
+    return Union({Atomic(int), Atomic(float)})
 
 
 @pytest.fixture()
 def optional_int():
-    return Optional(Simple(int))
+    return Optional(Atomic(int))
 
 
 @pytest.fixture()
 def optional_int_list():
-    return Optional(List(Simple(int)))
+    return Optional(List(Atomic(int)))
 
 
 def test_repr():
     for schema_str in [
-        'Simple(int)',
-        'Simple(float)',
-        'List(Simple(int))',
-        "Dict({'a': Simple(int), 'b': Simple(float)})",
-        "Dict({'a': Simple(int), 'b': List(Simple(float))})",
-        'Optional(Simple(int))',
-        'Union({Simple(int), Simple(float)})',
-        "DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 4, 'b': 2}))",
+        'Atomic(int)',
+        'Atomic(float)',
+        'List(Atomic(int))',
+        "Dict({'a': Atomic(int), 'b': Atomic(float)})",
+        "Dict({'a': Atomic(int), 'b': List(Atomic(float))})",
+        'Optional(Atomic(int))',
+        'Union({Atomic(int), Atomic(float)})',
+        "DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 4, 'b': 2}))",
         "Unknown()"
     ]:
         assert str(eval(schema_str)) == schema_str
@@ -112,7 +112,7 @@ def test_union(
     assert (simple_none | complex_dict) == Optional(complex_dict)
     assert (simple_none | simple_int | simple_int) == Optional(simple_int)
     assert (simple_int | simple_none | simple_int) == Optional(simple_int)
-    assert (Optional(simple_int) | Simple(None)) == Optional(simple_int)
+    assert (Optional(simple_int) | Atomic(None)) == Optional(simple_int)
     assert (Optional(simple_float) | Optional(
         simple_float)) == Optional(simple_float)
     assert (Optional(simple_float) | simple_int) == Optional(
@@ -126,16 +126,16 @@ def test_union(
     assert float_list | int_list == List(Union({simple_float, simple_int}))
     assert float_list | List(
         Optional(
-            Simple(float))) == List(
+            Atomic(float))) == List(
         Optional(simple_float))
-    assert Dict({'a': Simple(int), 'b': Simple(float)}) | Dict({'a': Simple(
-        int), 'b': Simple(float)}) == Dict({'a': Simple(int), 'b': Simple(float)})
-    assert Dict({'a': Simple(int),
-                 'b': Simple(float)}) | Dict({'a': Simple(None),
-                                              'b': Simple(float)}) == Dict({'a': Optional(Simple(int)),
-                                                                            'b': Simple(float)})
-    assert Dict({'a': Simple(int), 'b': Simple(float)}) | Dict(
-        {'a': Simple(int)}) == DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 2, 'b': 1}))
+    assert Dict({'a': Atomic(int), 'b': Atomic(float)}) | Dict({'a': Atomic(
+        int), 'b': Atomic(float)}) == Dict({'a': Atomic(int), 'b': Atomic(float)})
+    assert Dict({'a': Atomic(int),
+                 'b': Atomic(float)}) | Dict({'a': Atomic(None),
+                                              'b': Atomic(float)}) == Dict({'a': Optional(Atomic(int)),
+                                                                            'b': Atomic(float)})
+    assert Dict({'a': Atomic(int), 'b': Atomic(float)}) | Dict(
+        {'a': Atomic(int)}) == DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
 
 
 def test_set(simple_int, simple_float, simple_none,
@@ -153,15 +153,15 @@ def test_set(simple_int, simple_float, simple_none,
     assert len({List(simple_int), List(simple_int)}) == 1
     assert len({Optional(simple_float), List(
         simple_float), UniformDict(simple_float)}) == 3
-    assert Union.set([Dict({'a': Simple(int)}), Dict({'a': Simple(int), 'b': Simple(
-        float)})]) == DynamicDict({'a': Simple(int), 'b': Simple(float)}, Counter({'a': 2, 'b': 1}))
-    assert Union.set([Simple(None), Dict({'a': Simple(int)})]) == Optional(
-        Dict({'a': Simple(int)}))
-    assert Union.set([Simple(None),
-                      Dict({'a': Simple(int)}),
-                      Dict({'a': Simple(int),
-                            'b': Simple(float)})]) == Optional(DynamicDict({'a': Simple(int),
-                                                                            'b': Simple(float)}, Counter({'a': 2, 'b': 1})))
+    assert Union.set([Dict({'a': Atomic(int)}), Dict({'a': Atomic(int), 'b': Atomic(
+        float)})]) == DynamicDict({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
+    assert Union.set([Atomic(None), Dict({'a': Atomic(int)})]) == Optional(
+        Dict({'a': Atomic(int)}))
+    assert Union.set([Atomic(None),
+                      Dict({'a': Atomic(int)}),
+                      Dict({'a': Atomic(int),
+                            'b': Atomic(float)})]) == Optional(DynamicDict({'a': Atomic(int),
+                                                                            'b': Atomic(float)}, Counter({'a': 2, 'b': 1})))
 
 
 def test_to_uniform_dict(int_float_dict, simple_int, simple_float):

@@ -1,4 +1,4 @@
-from .objs import Dict, List, Simple, Union
+from .objs import Dict, List, Atomic, Union
 
 
 def fit(data, unify_callback=None):
@@ -15,9 +15,9 @@ def fit(data, unify_callback=None):
     elif isinstance(data, list):
         schema = List(Union.set([fit(e) for e in data]))
     elif data is None:
-        schema = Simple(None)
+        schema = Atomic(None)
     else:
-        schema = Simple(type(data))
+        schema = Atomic(type(data))
     return schema
 
 

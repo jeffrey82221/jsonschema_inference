@@ -12,7 +12,7 @@ import typing
 from functools import reduce
 from collections import Counter
 __all__ = [
-    'Simple',
+    'Atomic',
     'List',
     'Union',
     'Dict',
@@ -70,7 +70,7 @@ class JsonSchema:
         return self._base_hash()
 
 
-class Simple(JsonSchema):
+class Atomic(JsonSchema):
     """
     simple json units, such as `int`, `float`, `null`,
         `str`, etc.
@@ -81,13 +81,13 @@ class Simple(JsonSchema):
 
     def check_content(self):
         assert isinstance(
-            self._content, type) or self._content is None, 'Simple content should be `int`, `str`, `float`, or `None`'
+            self._content, type) or self._content is None, 'Atomic content should be `int`, `str`, `float`, or `None`'
 
     def __repr__(self):
         if self._content is None:
-            return 'Simple(None)'
+            return 'Atomic(None)'
         else:
-            return f'Simple({self._content.__name__})'
+            return f'Atomic({self._content.__name__})'
 
 
 class List(JsonSchema):
@@ -163,7 +163,7 @@ class Union(JsonSchema):
 class Optional(Union):
     def __init__(self, content: JsonSchema):
         self._the_content = content
-        super().__init__({Simple(None), content})
+        super().__init__({Atomic(None), content})
 
     def __repr__(self):
         return f'Optional({self._the_content})'
