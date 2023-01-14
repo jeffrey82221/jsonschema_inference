@@ -8,7 +8,7 @@ python -m nuitka --module --include-package=schema schema --python-flag=nosite,-
 
 ## How the paper define the json schema ? 
 
-- Atomic Values (aka. `Simple`):
+- [X] Atomic Values (aka. `Simple`):
 	- numbers (aka. `int`, `float`)
 	- strings (aka. `str`)
 	- booleans (aka. `bool`)
