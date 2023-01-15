@@ -1,7 +1,7 @@
 """
 A basic json schema inference engine
 """
-from ..fitter import fit, try_unify_dict
+from ..fitter import fit
 from ..objs import Union, JsonSchema
 
 
@@ -12,7 +12,7 @@ class InferenceEngine:
     @staticmethod
     def get_schema(json_batch) -> JsonSchema:
         return Union.set(
-            map(lambda js: fit(js, unify_callback=try_unify_dict), json_batch))
+            map(fit, json_batch))
 
     @staticmethod
     def _batchwise_generator(gen, batch_size=100):

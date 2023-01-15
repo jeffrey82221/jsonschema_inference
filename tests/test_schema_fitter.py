@@ -1,6 +1,6 @@
 from jsonschema_inference.schema.objs import Record, Array, Atomic, Optional, Union, UniformRecord, Unknown
-from jsonschema_inference.schema.fitter import fit, try_unify_dict
-
+from jsonschema_inference import fit
+from jsonschema_inference import init
 
 def test_fit():
     assert fit(1) == Atomic(int)
@@ -15,14 +15,23 @@ def test_fit():
     assert fit([]) == Array(Unknown())
 
 
-def test_unify_dict_callback():
-    assert fit({'1': 1, '2': 2}, unify_callback=try_unify_dict) == Record(
+def test_unify_records():
+    assert fit({'1': 1, '2': 2}) == Record(
         {'1': Atomic(int), '2': Atomic(int)})
     assert fit(
-        {'1': {'a': 5, 'b': 6}, '2': {'a': 34, 'b': None}},
-        unify_callback=try_unify_dict
+        {'1': {'a': 5, 'b': 6}, '2': {'a': 34, 'b': None}}
     ) == UniformRecord(Record({'a': Atomic(int), 'b': Optional(Atomic(int))}))
     assert fit(
-        {'1': [{'a': 5, 'b': 6}], '2': [{'a': 34, 'b': None}]},
-        unify_callback=try_unify_dict
+        {'1': [{'a': 5, 'b': 6}], '2': [{'a': 34, 'b': None}]}
     ) == UniformRecord(Array(Record({'a': Atomic(int), 'b': Optional(Atomic(int))})))
+
+def test_no_unify_records():
+    init.setup(unify_records=False)
+    assert fit({'1': 1, '2': 2}) == Record(
+        {'1': Atomic(int), '2': Atomic(int)})
+    assert fit(
+        {'1': {'a': 5, 'b': 6}, '2': {'a': 34, 'b': None}}
+    ) == Record({'1': Record({'a': Atomic(int), 'b': Atomic(int)}), '2': Record({'a': Atomic(int), 'b': Atomic(None)})})
+    assert fit(
+        {'1': [{'a': 5, 'b': 6}], '2': [{'a': 34, 'b': None}]}
+    ) == Record({'1': Array(Record({'a': Atomic(int), 'b': Atomic(int)})), '2': Array(Record({'a': Atomic(int), 'b': Atomic(None)}))})

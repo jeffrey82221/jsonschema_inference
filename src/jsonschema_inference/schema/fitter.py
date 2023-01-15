@@ -1,17 +1,17 @@
+from ..config import config
 from .objs import Record, Array, Atomic, Union
 
 
-def fit(data, unify_callback=None):
+def fit(data):
     if isinstance(data, dict):
         schema_content = dict()
         for key in data:
             schema_content[key] = fit(
-                data[key],
-                unify_callback=unify_callback
+                data[key]
             )
         schema = Record(schema_content)
-        if unify_callback is not None:
-            schema = unify_callback(schema)
+        if config.unify_records:
+            schema = try_unify_dict(schema)
     elif isinstance(data, list):
         schema = Array(Union.set([fit(e) for e in data]))
     elif data is None:
