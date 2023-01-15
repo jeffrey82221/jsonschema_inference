@@ -17,7 +17,6 @@ __all__ = [
 ]
 
 
-
 class Record(JsonSchema):
     def __init__(self, content: dict):
         super().__init__(content)
@@ -46,18 +45,18 @@ class Record(JsonSchema):
                 return old
             else:
                 if config.equivalence_mode == 'kind':
-                    return DynamicRecord.merge_records_as_dynamic_record(old, new)
+                    return DynamicRecord.merge_records_as_dynamic_record(
+                        old, new)
                 elif config.equivalence_mode == 'label':
                     return self._base_or(e)
         else:
             return self._base_or(e)
-    
+
     @staticmethod
     def merge_label_equal_fields(old: Record, new: Record):
         for key in old._content:
             old._content[key] |= new._content[key]
         return old
-
 
     def to_uniform_dict(self):
         schemas = [v for v in self._content.values()]
@@ -116,12 +115,12 @@ class DynamicRecord(Record):
         for key in new._content.keys():
             key_counter[key] += 1
         return DynamicRecord(result_dict, key_counter)
-    
+
     @staticmethod
     def __merge_common_fields(old: Record, new: Record):
         result_dict = {}
         for key in set(list(old._content.keys()) +
-                        list(new._content.keys())):
+                       list(new._content.keys())):
             if key in old._content and key in new._content:
                 result_dict[key] = old._content[key] | new._content[key]
             elif key in old._content:
@@ -129,8 +128,6 @@ class DynamicRecord(Record):
             elif key in new._content:
                 result_dict[key] = new._content[key]
         return result_dict
-
-
 
 
 class UniformRecord(JsonSchema):

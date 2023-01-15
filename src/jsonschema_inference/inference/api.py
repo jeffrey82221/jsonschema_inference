@@ -90,7 +90,9 @@ class APIInferenceEngine:
             self._jsonl_index_filter = IndexCuckooFilter(
                 self.index_generator, dump_file_path='jsonl_cuckoo.pickle'
             )
-            self._jsonl_saver = JsonlSaver(self._jsonl_index_filter, archieve_file_path=jsonl_dump)
+            self._jsonl_saver = JsonlSaver(
+                self._jsonl_index_filter,
+                archieve_file_path=jsonl_dump)
             self._register_graceful_exist([self._jsonl_index_filter])
 
     def _register_graceful_exist(self, objs):
@@ -112,7 +114,7 @@ class APIInferenceEngine:
     @abc.abstractmethod
     def is_valid_json(self, json_dict: typing.Dict) -> bool:
         return True
-    
+
     @property
     def count(self):
         return sum(1 for _ in self.index_generator())
@@ -155,8 +157,9 @@ class APIInferenceEngine:
 
                     # Saving json into jsonl file
                     if self._jsonl_dump is not None:
-                        json_index_name_pipe = self._jsonl_saver.save(json_index_name_pipe)    
-                    
+                        json_index_name_pipe = self._jsonl_saver.save(
+                            json_index_name_pipe)
+
                     # Convert to batch-wise pipe
                     json_index_name_batch_pipe = InferenceEngine._batchwise_generator(
                         json_index_name_pipe, batch_size=self._json_per_worker)
@@ -223,9 +226,9 @@ class IndexCuckooFilter:
     has already been captured in the downstream pipeline.
 
     Args:
-        - index_gen_builder: a function that produce a index generator which help IndexCuckooFilter to 
-            construct the index set. 
-        - dump_file_path: the path to store the index set status information. 
+        - index_gen_builder: a function that produce a index generator which help IndexCuckooFilter to
+            construct the index set.
+        - dump_file_path: the path to store the index set status information.
         - error_rate: the error rate of identifying an non-existing item in the set.
     """
 
@@ -285,14 +288,19 @@ class IndexCuckooFilter:
             pickle.dump(self._cuckoo, handle, protocol=pickle.HIGHEST_PROTOCOL)
         print(f'{self._dump_file_path} Saved')
 
+
 class JsonlSaver:
     """
     This class enable saving the json(s) into a archive jsonl file.
     """
-    def __init__(self, cuckoo_filter: IndexCuckooFilter, archieve_file_path='archieve.jsonl'):
+
+    def __init__(self, cuckoo_filter: IndexCuckooFilter,
+                 archieve_file_path='archieve.jsonl'):
         self._cuckoo_filter = cuckoo_filter
         self._archieve_file_path = archieve_file_path
-    def save(self, json_index_producer: typing.Iterable[typing.Tuple[str, dict]]):
+
+    def save(
+            self, json_index_producer: typing.Iterable[typing.Tuple[str, dict]]):
         """
         Check and save the passing index-json tuple
         """

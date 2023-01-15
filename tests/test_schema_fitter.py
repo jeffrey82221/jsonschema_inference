@@ -2,11 +2,13 @@ from jsonschema_inference.schema.objs import Record, Array, Atomic, Optional, Un
 from jsonschema_inference import fit
 import jsonschema_inference
 
+
 def test_fit():
     assert fit(1) == Atomic(int)
     assert fit(1.2) == Atomic(float)
     assert fit([1]) == Array(Atomic(int))
-    assert fit({'a': 1, 'b': 2}) == Record({'a': Atomic(int), 'b': Atomic(int)})
+    assert fit({'a': 1, 'b': 2}) == Record(
+        {'a': Atomic(int), 'b': Atomic(int)})
     assert fit([1, None]) == Array(Optional(Atomic(int)))
     assert fit([1, 1.2, None]) == Array(
         Union({Atomic(int), Atomic(float), Atomic(None)}))
@@ -24,6 +26,7 @@ def test_unify_records():
     assert fit(
         {'1': [{'a': 5, 'b': 6}], '2': [{'a': 34, 'b': None}]}
     ) == UniformRecord(Array(Record({'a': Atomic(int), 'b': Optional(Atomic(int))})))
+
 
 def test_no_unify_records():
     jsonschema_inference.init(unify_records=False)

@@ -9,6 +9,7 @@ __all__ = [
     'Array'
 ]
 
+
 class Array(JsonSchema):
     def __init__(self, content: JsonSchema):
         super().__init__(content)
