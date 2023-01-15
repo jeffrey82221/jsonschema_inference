@@ -13,7 +13,7 @@ python -m nuitka --module --include-package=schema schema --python-flag=nosite,-
 	- strings (aka. `str`)
 	- booleans (aka. `bool`)
 	- null (aka. `None`)
-- Complex Values:
+- [X] Complex Values:
 	- record: unordered sets of key/value paris (aka. `Dict`)
 	- array: ordered list of values (aka. `List`)
 
@@ -31,19 +31,19 @@ union are represented by `+` and `*` symbol:
 
 # TODO:
 
-- [ ] move `try_unify_dict` from `inference_base` to `schema_fitter` and add a unify_dict bool arg to `fit`. 
-- [ ] Enable the selection of kind equivalence and label equivalence:
-	- [ ] kind equivalence: 
-		-  [ ] Turn on `DynamicDict`
-		-  [ ] Allow `DynamicDict` to be represented with marking of whether a field is optional (missing some times) or not. 
-	-  [ ] label equivalence:
-		-  [ ] Turn off `DynamicDict` (Dict with different labels should be merged into `Union` of Dict(s))
-- [ ] Construction of UniformDict should be optional, too. 
+- [X] move `try_unify_dict` from `inference_base` to `schema_fitter` and add a unify_dict bool arg to `fit`. 
+- [X] Enable the selection of kind equivalence and label equivalence:
+	- [X] kind equivalence: 
+		-  [X] Turn on `DynamicDict`
+		-  [X] Allow `DynamicDict` to be represented with marking of whether a field is optional (missing some times) or not. 
+	-  [X] label equivalence:
+		-  [X] Turn off `DynamicDict` (Dict with different labels should be merged into `Union` of Dict(s))
+- [X] Construction of UniformDict should be optional, too. 
 - [X] Try to imitate the json schema of the paper
 	- [X] `Simple` -> `Atomic`
 	- [X] `Dict` -> `Record`
 	- [X] `List` -> `Array`
-- [ ] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
+- [X] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
 - [ ] Extract a `SpeedInferenceEngine` for `APIInfernceEngine` & `JsonlInferenceEngine`. 
 - [ ] `ViewDataClass` for Jsonl:
 - [ ] A `JsonlPandasAdaptor` for converting jsonl file to pandas dataframe, where a list of keys can be provided and mapped to a column of a pandas table. (The `overview` dataclass simply convert jsonl to pandas.DataFrame.) 
