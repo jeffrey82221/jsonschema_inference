@@ -2,12 +2,13 @@
 Record Json Schema Objects
 
 TODO:
-- [ ] Allow another DynamicDict to capture mandatory fields & co-occurrence relationship between fields
-- [ ] Enable representing the __init__ of DynamicDict (same as other schema types)
+- [X] Allow another DynamicDict to capture mandatory fields & co-occurrence relationship between fields
+- [X] Enable representing the __init__ of DynamicDict (same as other schema types)
 """
 from __future__ import annotations
 import copy
 from collections import Counter
+from ...config import config
 from .basic import JsonSchema, Union
 __all__ = [
     'Record',
@@ -44,7 +45,10 @@ class Record(JsonSchema):
                 old = Record.merge_label_equal_fields(old, new)
                 return old
             else:
-                return DynamicRecord.merge_records_as_dynamic_record(old, new)
+                if config.equivalence_mode == 'kind':
+                    return DynamicRecord.merge_records_as_dynamic_record(old, new)
+                elif config.equivalence_mode == 'label':
+                    return self._base_or(e)
         else:
             return self._base_or(e)
     

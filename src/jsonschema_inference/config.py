@@ -6,16 +6,22 @@ Config the Json Schema Inference Model
 - 2. enable_uniform_record: True | False (whether try to unify Record values for Record with values of same kind)
 """
 class Config:
-    def __init__(self, unify_records = True):
-        self.setup(unify_records=unify_records)
+    def __init__(self, unify_records = True, equivalence_mode='kind'):
+        self.init(unify_records=unify_records, equivalence_mode=equivalence_mode)
 
-    def setup(self, unify_records = True):
+    def init(self, unify_records = True, equivalence_mode='kind'):
         self._unify_records = unify_records
+        assert equivalence_mode == 'kind' or equivalence_mode == 'label'
+        self._equivalence_mode = equivalence_mode
 
     @property
     def unify_records(self) -> bool:
         return self._unify_records
-
+    
+    @property
+    def equivalence_mode(self) -> str:
+        return self._equivalence_mode
 
 
 config = Config()
+init = config.init

@@ -1,4 +1,3 @@
-from .config import config
+from .config import init
 from .schema.fitter import fit
-init = config 
 __all__ = ['init', 'fit']
