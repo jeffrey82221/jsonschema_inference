@@ -5,6 +5,7 @@ TODO:
 - [ ] Allow another DynamicDict to capture mandatory fields & co-occurrence relationship between fields
 - [ ] Enable representing the __init__ of DynamicDict (same as other schema types)
 """
+from __future__ import annotations
 import copy
 from collections import Counter
 from .basic import JsonSchema, Union
@@ -44,23 +45,11 @@ class Record(JsonSchema):
                     old._content[key] |= new._content[key]
                 return old
             else:
-                result_dict = {}
-                key_counter = Counter()
-                for key in set(list(old._content.keys()) +
-                               list(new._content.keys())):
-                    if key in old._content and key in new._content:
-                        result_dict[key] = old._content[key] | new._content[key]
-                    elif key in old._content:
-                        result_dict[key] = old._content[key]
-                    elif key in new._content:
-                        result_dict[key] = new._content[key]
-                for key in old._content.keys():
-                    key_counter[key] += 1
-                for key in new._content.keys():
-                    key_counter[key] += 1
-                return DynamicRecord(result_dict, key_counter)
+                return DynamicRecord.merge_records_as_dynamic_record(old, new)
         else:
             return self._base_or(e)
+    
+    
 
     def to_uniform_dict(self):
         schemas = [v for v in self._content.values()]
@@ -86,36 +75,64 @@ class DynamicRecord(Record):
             hash(tuple(sorted(self._key_counter.items())))
 
     def __or__(self, e):
-        result_dict = dict()
         if isinstance(e, DynamicRecord):
             old = copy.deepcopy(self)
             new = copy.deepcopy(e)
-            for key in set(list(old._content.keys()) +
-                           list(new._content.keys())):
-                if key in old._content and key in new._content:
-                    result_dict[key] = old._content[key] | new._content[key]
-                elif key in old._content:
-                    result_dict[key] = old._content[key]
-                elif key in new._content:
-                    result_dict[key] = new._content[key]
-            return DynamicRecord(
-                result_dict, old._key_counter + new._key_counter)
+            return DynamicRecord.merge_dynamic_records(old, new)
         elif isinstance(e, Record):
             old = copy.deepcopy(self)
             new = copy.deepcopy(e)
-            for key in set(list(old._content.keys()) +
-                           list(new._content.keys())):
-                if key in old._content and key in new._content:
-                    result_dict[key] = old._content[key] | new._content[key]
-                elif key in old._content:
-                    result_dict[key] = old._content[key]
-                elif key in new._content:
-                    result_dict[key] = new._content[key]
-            for key in new._content.keys():
-                old._key_counter[key] += 1
-            return DynamicRecord(result_dict, old._key_counter)
+            return DynamicRecord.merge_dynamic_n_normal_records(old, new)
         else:
             return self._base_or(e)
+
+    @staticmethod
+    def merge_dynamic_n_normal_records(old: DynamicRecord, new: Record):
+        result_dict = dict()
+        for key in set(list(old._content.keys()) +
+                        list(new._content.keys())):
+            if key in old._content and key in new._content:
+                result_dict[key] = old._content[key] | new._content[key]
+            elif key in old._content:
+                result_dict[key] = old._content[key]
+            elif key in new._content:
+                result_dict[key] = new._content[key]
+        for key in new._content.keys():
+            old._key_counter[key] += 1
+        return DynamicRecord(result_dict, old._key_counter)
+
+    @staticmethod
+    def merge_dynamic_records(old: DynamicRecord, new: DynamicRecord):
+        result_dict = dict()
+        for key in set(list(old._content.keys()) +
+                        list(new._content.keys())):
+            if key in old._content and key in new._content:
+                result_dict[key] = old._content[key] | new._content[key]
+            elif key in old._content:
+                result_dict[key] = old._content[key]
+            elif key in new._content:
+                result_dict[key] = new._content[key]
+        return DynamicRecord(
+            result_dict, old._key_counter + new._key_counter)
+
+    @staticmethod
+    def merge_records_as_dynamic_record(old: Record, new: Record):
+        result_dict = {}
+        key_counter = Counter()
+        for key in set(list(old._content.keys()) +
+                        list(new._content.keys())):
+            if key in old._content and key in new._content:
+                result_dict[key] = old._content[key] | new._content[key]
+            elif key in old._content:
+                result_dict[key] = old._content[key]
+            elif key in new._content:
+                result_dict[key] = new._content[key]
+        for key in old._content.keys():
+            key_counter[key] += 1
+        for key in new._content.keys():
+            key_counter[key] += 1
+        return DynamicRecord(result_dict, key_counter)
+
 
 
 class UniformRecord(JsonSchema):
