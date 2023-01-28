@@ -19,7 +19,7 @@ pprint.pprint(schema)
 class TestEngine(JsonlInferenceEngine):
     @property
     def jsonl_path(self):
-        return 'data/archive.jsonl'
+        return 'data/small_test.jsonl'
 
 
 schema = TestEngine(inference_worker_cnt=4).get_schema()
