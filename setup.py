@@ -1,4 +1,5 @@
 import setuptools
+from setuptools import find_packages
 
 with open("README.md", "r") as fh:
 
@@ -8,7 +9,7 @@ setuptools.setup(
 
     name="jsonschema-inference",  # Replace with your username
 
-    version="0.0.0",
+    version="0.0.1",
 
     author="jeffreylin",
 
@@ -22,7 +23,7 @@ setuptools.setup(
 
     url="https://github.com/jeffrey82221/jsonschema_inference",
 
-    packages=['jsonschema_inference'],
+    packages=find_packages(exclude=('tests',)),
 
     package_dir={'': 'src'},
 
