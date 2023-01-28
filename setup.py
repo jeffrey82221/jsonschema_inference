@@ -23,6 +23,7 @@ setuptools.setup(
     url="https://github.com/jeffrey82221/jsonschema_inference",
 
     packages=['jsonschema_inference'],
+
     package_dir={'': 'src'},
 
     classifiers=[
@@ -35,5 +36,13 @@ setuptools.setup(
 
     ],
     python_requires='>=3.7',
-    tests_require=['pytest']
+    tests_require=['pytest'],
+    install_requires=[
+        'execnet==1.9.0',
+        'ray==2.2.0',
+        'requests==2.28.2',
+        'scalable-cuckoo-filter==1.1',
+        'tqdm==4.64.1',
+        'urllib3==1.26.14'
+    ]
 )
