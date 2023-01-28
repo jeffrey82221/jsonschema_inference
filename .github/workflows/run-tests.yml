@@ -18,5 +18,4 @@ jobs:
       - name: run type checking
         run: | 
          pip install mypy
-         mypy --install-types --non-interactive
          mypy jsonschema_inference --ignore-missing-imports
