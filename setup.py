@@ -47,7 +47,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-        'jsonschema-inference = \
+            'jsonschema-inference = \
         jsonschema_inference.cmd.inference:run',
         ],
     }
