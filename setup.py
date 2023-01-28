@@ -1,3 +1,13 @@
+"""
+How to sent this package onto PyPi?
+
+1) Building Package Release Tar:
+```python setup.py sdist```
+
+2) Upload Package to PyPi: 
+```pip install twine```
+```twine upload dist/*```
+"""
 import setuptools
 from setuptools import find_packages
 
@@ -38,7 +48,6 @@ setuptools.setup(
     tests_require=['pytest'],
     install_requires=[
         'execnet',
-        'ray',
         'requests',
         'scalable-cuckoo-filter',
         'tqdm',
@@ -50,5 +59,8 @@ setuptools.setup(
             'jsonschema-inference = \
         jsonschema_inference.cmd.inference:run',
         ],
+    },
+    extras_require={
+        'ray': ["ray"]
     }
 )
