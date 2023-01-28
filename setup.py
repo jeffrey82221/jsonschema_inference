@@ -42,6 +42,13 @@ setuptools.setup(
         'requests',
         'scalable-cuckoo-filter',
         'tqdm',
-        'urllib3'
-    ]
+        'urllib3',
+        'autopep8'
+    ],
+    entry_points={
+        'console_scripts': [
+        'jsonschema-inference = \
+        jsonschema_inference.cmd.inference:run',
+        ],
+    }
 )
