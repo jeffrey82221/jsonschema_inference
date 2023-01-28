@@ -108,7 +108,7 @@ class DynamicRecord(Record):
 
     @staticmethod
     def merge_records_as_dynamic_record(old: Record, new: Record):
-        key_counter = Counter()
+        key_counter: Counter = Counter()
         result_dict = DynamicRecord.__merge_common_fields(old, new)
         for key in old._content.keys():
             key_counter[key] += 1

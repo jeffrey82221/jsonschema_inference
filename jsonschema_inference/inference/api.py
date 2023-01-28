@@ -300,7 +300,7 @@ class JsonlSaver:
         self._archieve_file_path = archieve_file_path
 
     def save(
-            self, json_index_producer: typing.Iterable[typing.Tuple[str, dict]]):
+            self, json_index_producer: typing.Iterable[typing.Tuple[dict, str]]):
         """
         Check and save the passing index-json tuple
         """

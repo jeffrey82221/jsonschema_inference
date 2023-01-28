@@ -67,7 +67,7 @@ class Atomic(JsonSchema):
         `str`, etc.
     """
 
-    def __init__(self, content: type):
+    def __init__(self, content: typing.Union[type, None]):
         super().__init__(content)
 
     def check_content(self):
@@ -94,7 +94,7 @@ class Unknown(JsonSchema):
 
 class Union(JsonSchema):
     @staticmethod
-    def set(json_schemas: typing.Set[JsonSchema]) -> JsonSchema:
+    def set(json_schemas: typing.Iterable[JsonSchema]) -> JsonSchema:
         if json_schemas:
             result = reduce(lambda a, b: a | b, json_schemas)
         else:
