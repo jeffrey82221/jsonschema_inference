@@ -119,8 +119,10 @@ class DynamicRecord(Record):
     @staticmethod
     def __merge_common_fields(old: Record, new: Record):
         result_dict = {}
-        for key in set(list(old._content.keys()) +
-                       list(new._content.keys())):
+        old_keys = list(old._content.keys())
+        new_keys = list(new._content.keys())
+        all_keys = set(old_keys + new_keys)
+        for key in all_keys:
             if key in old._content and key in new._content:
                 result_dict[key] = old._content[key] | new._content[key]
             elif key in old._content:
