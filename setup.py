@@ -9,7 +9,7 @@ setuptools.setup(
 
     name="jsonschema-inference",
 
-    version="0.0.3",
+    version="0.0.1",
 
     author="jeffreylin",
 
