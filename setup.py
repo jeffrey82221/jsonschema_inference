@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 
-    name="jsonschema-inference",  # Replace with your username
+    name="jsonschema_inference",
 
     version="0.0.1",
 
