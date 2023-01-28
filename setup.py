@@ -25,8 +25,6 @@ setuptools.setup(
 
     packages=find_packages(exclude=('tests',)),
 
-    package_dir={'': 'src'},
-
     classifiers=[
 
         "Programming Language :: Python :: 3",
