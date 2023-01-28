@@ -4,10 +4,11 @@ How to sent this package onto PyPi?
 1) Building Package Release Tar:
 ```python setup.py sdist```
 
-2) Upload Package to PyPi: 
+2) Upload Package to PyPi:
 ```pip install twine```
 ```twine upload dist/*```
 """
+import pathlib
 import setuptools
 from setuptools import find_packages
 
@@ -18,11 +19,15 @@ with open("README.md", "r") as fh:
 with open('requirements.txt', 'r') as f:
     install_requires = [ln.replace('\n', '') for ln in f]
 
+with open(str(pathlib.Path(__file__).parent.absolute()) +
+          "/jsonschema_inference/version.py", "r") as fh:
+    version = fh.read().split("=")[1].replace("'", "")
+
 setuptools.setup(
 
     name="jsonschema-inference",
 
-    version="0.0.2",
+    version=version,
 
     author="jeffreylin",
 

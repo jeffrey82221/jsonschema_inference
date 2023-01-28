@@ -1,7 +1,6 @@
 import abc
 import os
 import subprocess
-import pprint
 from threading import Thread
 import signal
 from . import remote
@@ -102,7 +101,7 @@ class JsonlInferenceEngine:
 
     def _graceful_exit(self, signal=None, frame=None):
         self._exit()
-        print(f'graceful exited')
+        print('graceful exited')
         os._exit(0)
 
     def __stop_gateways(self):
@@ -111,12 +110,12 @@ class JsonlInferenceEngine:
                 gw.exit()
             except BaseException:
                 pass
-        print(f'remote gateways stopped')
+        print('remote gateways stopped')
 
     def __remove_split_files(self):
         if os.path.exists(self._split_path):
             subprocess.run(['rm', '-r', self._split_path])
-            print(f'split files removed')
+            print('split files removed')
 
     def _split_jsonl(self, split_count):
         out = subprocess.check_output(['wc', '-l', self.jsonl_path])

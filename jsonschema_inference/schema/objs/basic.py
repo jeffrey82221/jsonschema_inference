@@ -7,7 +7,6 @@ import typing
 from functools import reduce
 __all__ = [
     'Atomic',
-    'Array',
     'Union',
     'Optional',
     'Unknown'
