@@ -16,8 +16,6 @@ with open("README.md", "r") as fh:
 
     long_description = fh.read()
 
-with open('requirements.txt', 'r') as f:
-    install_requires = [ln.replace('\n', '') for ln in f]
 
 with open(str(pathlib.Path(__file__).parent.absolute()) +
           "/jsonschema_inference/version.py", "r") as fh:
@@ -54,7 +52,14 @@ setuptools.setup(
     ],
     python_requires='>=3.7',
     tests_require=['pytest'],
-    install_requires=install_requires,
+    install_requires=[
+        'execnet',
+        'requests',
+        'scalable-cuckoo-filter',
+        'tqdm',
+        'urllib3',
+        'autopep8'
+    ],
     entry_points={
         'console_scripts': [
             'jsonschema-inference = \
