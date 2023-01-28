@@ -16,4 +16,6 @@ jobs:
           pip install pytest
           pytest
       - name: run type checking
-        run: mypy jsonschema_inference
+        run: | 
+         pip install mypy
+         mypy jsonschema_inference
