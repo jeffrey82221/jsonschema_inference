@@ -44,6 +44,10 @@ union are represented by `+` and `*` symbol:
 	- [X] `Dict` -> `Record`
 	- [X] `List` -> `Array`
 - [X] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
+- [ ] Convert the core json schema inference engine to Rust. 
+	- [ ] change `get_schema` in `schema.inference.base.InferenceEngine` to class method with `batch`-wise convertion encapsulate. (InferenceEngine takes batch size as input.) 
+	- [ ] per-batch `get_schema` using Rust version. 
+	- [ ] change `reduce_schema` in `schema.inference.reduce` to Rust version. 
 - [ ] Extract a `SpeedInferenceEngine` for `APIInfernceEngine` & `JsonlInferenceEngine`. 
 - [ ] `ViewDataClass` for Jsonl:
 - [ ] A `JsonlPandasAdaptor` for converting jsonl file to pandas dataframe, where a list of keys can be provided and mapped to a column of a pandas table. (The `overview` dataclass simply convert jsonl to pandas.DataFrame.) 
