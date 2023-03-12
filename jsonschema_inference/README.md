@@ -45,9 +45,14 @@ union are represented by `+` and `*` symbol:
 	- [X] `List` -> `Array`
 - [X] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
 - [ ] Convert the core json schema inference engine to Rust. 
-	- [ ] change `get_schema` in `schema.inference.base.InferenceEngine` to class method with `batch`-wise convertion encapsulate. (InferenceEngine takes batch size as input.) 
-	- [ ] per-batch `get_schema` using Rust version. 
-	- [ ] change `reduce_schema` in `schema.inference.reduce` to Rust version. 
+	- [ ] change `get_schema` in `schema.inference.base.InferenceEngine` to take `list` as input, and build another `get_schema_iteratively` method that do schema batch-by-batch. 
+	- [ ] apply the new `get_schema` to `api.py`.
+	- [ ] apply `get_schema_iteratively` to `jsonl.py`
+	- [ ] adopt Rust json inference engine: 
+		- [ ] adopt Rust `InferenceEngine` in `get_schema`. 
+		- [ ] adopt Rust `reduce_schema` in `schema.inference.reduce`.
+	- [ ] experiment with rust version and python version time. 
+	- [ ] simplify the implementation of `jsonl.py` if the speed increases.
 - [ ] Extract a `SpeedInferenceEngine` for `APIInfernceEngine` & `JsonlInferenceEngine`. 
 - [ ] `ViewDataClass` for Jsonl:
 - [ ] A `JsonlPandasAdaptor` for converting jsonl file to pandas dataframe, where a list of keys can be provided and mapped to a column of a pandas table. (The `overview` dataclass simply convert jsonl to pandas.DataFrame.) 
