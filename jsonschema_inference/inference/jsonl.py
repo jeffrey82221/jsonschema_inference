@@ -4,7 +4,8 @@ import subprocess
 from threading import Thread
 import signal
 from . import remote
-from ..schema.objs import Union
+from ..schema.inference.reduce import reduce_schema
+
 
 __all__ = ['JsonlInferenceEngine']
 
@@ -87,7 +88,7 @@ class JsonlInferenceEngine:
                 th = self.threads[i]
                 self.threads[i] = None
                 del th
-            result = Union.set(schemas)
+            result = reduce_schema(schemas)
             return result
         except BaseException as e:
             raise e

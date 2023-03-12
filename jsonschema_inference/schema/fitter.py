@@ -1,5 +1,6 @@
 from ..config import config
-from .objs import Record, Array, Atomic, Union
+from .objs import Record, Array, Atomic
+from .inference.reduce import reduce_schema
 
 
 def fit(data):
@@ -13,7 +14,7 @@ def fit(data):
         if config.unify_records:
             schema = try_unify_dict(schema)
     elif isinstance(data, list):
-        schema = Array(Union.set([fit(e) for e in data]))
+        schema = Array(reduce_schema([fit(e) for e in data]))
     elif data is None:
         schema = Atomic(None)
     else:

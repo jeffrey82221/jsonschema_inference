@@ -2,6 +2,7 @@ import pytest
 import copy
 from collections import Counter
 from jsonschema_inference.schema.objs import Atomic, Array, Record, Union, Optional, UniformRecord, Unknown, DynamicRecord
+from jsonschema_inference.schema.inference.reduce import reduce_schema
 import jsonschema_inference
 
 
@@ -142,37 +143,37 @@ def test_union(
 def test_set(simple_int, simple_float, simple_none,
              int_list, float_list, int_float_dict, complex_dict, int_float_union
              ):
-    assert Union.set([]) == Unknown()
-    assert Union.set([simple_int, simple_float]) == int_float_union
-    assert Union.set([simple_int, simple_none]) == Optional(simple_int)
-    assert Union.set([int_list, float_list, int_float_dict]) == Union(
+    assert reduce_schema([]) == Unknown()
+    assert reduce_schema([simple_int, simple_float]) == int_float_union
+    assert reduce_schema([simple_int, simple_none]) == Optional(simple_int)
+    assert reduce_schema([int_list, float_list, int_float_dict]) == Union(
         {Array(Union({simple_int, simple_float})), int_float_dict})
-    assert Union.set([complex_dict, complex_dict,
-                     complex_dict]) == complex_dict
+    assert reduce_schema([complex_dict, complex_dict,
+                          complex_dict]) == complex_dict
     assert {complex_dict, complex_dict} == {complex_dict}
     assert len({Optional(simple_int), Array(simple_int)}) == 2
     assert len({Array(simple_int), Array(simple_int)}) == 1
     assert len({Optional(simple_float), Array(
         simple_float), UniformRecord(simple_float)}) == 3
-    assert Union.set([Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(
+    assert reduce_schema([Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(
         float)})]) == DynamicRecord({'a': Atomic(int), 'b': Atomic(float)}, Counter({'a': 2, 'b': 1}))
-    assert Union.set([Atomic(None), Record({'a': Atomic(int)})]) == Optional(
+    assert reduce_schema([Atomic(None), Record({'a': Atomic(int)})]) == Optional(
         Record({'a': Atomic(int)}))
-    assert Union.set([Atomic(None),
-                      Record({'a': Atomic(int)}),
-                      Record({'a': Atomic(int),
-                              'b': Atomic(float)})]) == Optional(DynamicRecord({'a': Atomic(int),
-                                                                                'b': Atomic(float)}, Counter({'a': 2, 'b': 1})))
+    assert reduce_schema([Atomic(None),
+                          Record({'a': Atomic(int)}),
+                          Record({'a': Atomic(int),
+                                  'b': Atomic(float)})]) == Optional(DynamicRecord({'a': Atomic(int),
+                                                                                    'b': Atomic(float)}, Counter({'a': 2, 'b': 1})))
     # assert of equavilence_model = label
     jsonschema_inference.init(equivalence_mode='label')
-    assert Union.set([Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(
+    assert reduce_schema([Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(
         float)})]) == Union({Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(float)})})
 
-    assert Union.set([Atomic(None),
-                      Record({'a': Atomic(int)}),
-                      Atomic(None),
-                      Record({'a': Atomic(int),
-                              'b': Atomic(float)})]) == Optional(Union({Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(float)})}))
+    assert reduce_schema([Atomic(None),
+                          Record({'a': Atomic(int)}),
+                          Atomic(None),
+                          Record({'a': Atomic(int),
+                                  'b': Atomic(float)})]) == Optional(Union({Record({'a': Atomic(int)}), Record({'a': Atomic(int), 'b': Atomic(float)})}))
 
 
 def test_to_uniform_dict(int_float_dict, simple_int, simple_float):

@@ -9,7 +9,9 @@ from __future__ import annotations
 import copy
 from collections import Counter
 from ...config import config
-from .basic import JsonSchema, Union
+from ..inference.reduce import reduce_schema
+from .basic import JsonSchema
+
 __all__ = [
     'Record',
     'UniformRecord',
@@ -60,7 +62,7 @@ class Record(JsonSchema):
 
     def to_uniform_dict(self):
         schemas = [v for v in self._content.values()]
-        uniform_content = Union.set(schemas)
+        uniform_content = reduce_schema(schemas)
         return UniformRecord(uniform_content)
 
 
