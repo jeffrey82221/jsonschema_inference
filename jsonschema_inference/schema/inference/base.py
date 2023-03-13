@@ -15,15 +15,18 @@ class InferenceEngine:
         self._batch_size = batch_size
 
     def get_schema_iteratively(self, json_pipe: typing.Iterable[typing.Any]):
-        batch_pipe = InferenceEngine._batchwise_generator(json_pipe, batch_size=self._batch_size)
-        schema_pipe = map(lambda batch: InferenceEngine.get_schema(batch), batch_pipe)
+        batch_pipe = InferenceEngine._batchwise_generator(
+            json_pipe, batch_size=self._batch_size)
+        schema_pipe = map(
+            lambda batch: InferenceEngine.get_schema(batch),
+            batch_pipe)
         return reduce_schema(schema_pipe)
-    
+
     @staticmethod
     def get_schema(json_batch: typing.List[typing.Any]) -> JsonSchema:
         return reduce_schema(
             map(fit, json_batch))
-    
+
     @staticmethod
     def _batchwise_generator(gen, batch_size=100):
         batch = []

@@ -2,12 +2,12 @@
 Schema demo
 """
 from jsonschema_inference.schema.objs import (
-    DynamicRecord, 
-    Record, 
-    Atomic, 
-    Array, 
-    Optional, 
-    Unknown, 
+    DynamicRecord,
+    Record,
+    Atomic,
+    Array,
+    Optional,
+    Unknown,
     UniformRecord
 )
 from collections import Counter
