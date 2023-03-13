@@ -45,7 +45,7 @@ union are represented by `+` and `*` symbol:
 	- [X] `List` -> `Array`
 - [X] Allow passing of `equavalence_model = 'kind' | 'label'` and `unify_duct = True | False` from `InferenceEngine` (also `APIInferenceEngine & JsonlInferenceEngine`
 - [ ] Convert the core json schema inference engine to Rust. 
-	- [ ] change `get_schema` in `schema.inference.base.InferenceEngine` to take `list` as input, and build another `get_schema_iteratively` method that do schema batch-by-batch. 
+	- [X] change `get_schema` in `schema.inference.base.InferenceEngine` to take `list` as input, and build another `get_schema_iteratively` method that do schema batch-by-batch. 
 	- [ ] apply the new `get_schema` to `api.py`.
 	- [ ] apply `get_schema_iteratively` to `jsonl.py`
 	- [ ] adopt Rust json inference engine: 
