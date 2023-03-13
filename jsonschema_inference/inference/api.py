@@ -214,8 +214,8 @@ class APIInferenceEngine:
     @staticmethod
     def _pr_run(
             json_index_name_batch: typing.List[typing.Tuple[typing.Dict, str]]):
-        index_name_batch = list(map(lambda x: x[1], json_index_name_batch))
-        json_batch = map(lambda x: x[0], json_index_name_batch)
+        json_batch = [x[0] for x in json_index_name_batch]
+        index_name_batch = [x[1] for x in json_index_name_batch]
         json_schema = InferenceEngine.get_schema(json_batch)
         return json_schema, index_name_batch
 
