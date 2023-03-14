@@ -4,12 +4,13 @@ import subprocess
 from threading import Thread
 import signal
 from . import remote
-from ..schema.objs import Union
+from ..schema.inference.reduce import reduce_schema
+
 
 __all__ = ['JsonlInferenceEngine']
 
 
-def get_schema_remotely(jsonl_path, verbose=True, position=0):
+def get_schema_remotely(jsonl_path, verbose=True, position=0, batch_size=1000):
     import json
     import tqdm
     from jsonschema_inference.schema import InferenceEngine
@@ -19,7 +20,8 @@ def get_schema_remotely(jsonl_path, verbose=True, position=0):
         if verbose:
             json_pipe = tqdm.tqdm(
                 json_pipe, total=total, desc=jsonl_path, position=position)
-        schema = InferenceEngine.get_schema(json_pipe)
+        schema = InferenceEngine(
+            batch_size=batch_size).get_schema_iteratively(json_pipe)
     return schema
 
 
@@ -87,7 +89,7 @@ class JsonlInferenceEngine:
                 th = self.threads[i]
                 self.threads[i] = None
                 del th
-            result = Union.set(schemas)
+            result = reduce_schema(schemas)
             return result
         except BaseException as e:
             raise e

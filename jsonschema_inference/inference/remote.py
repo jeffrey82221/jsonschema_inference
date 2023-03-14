@@ -2,6 +2,7 @@ import execnet
 import inspect
 from functools import wraps
 exec('from ..schema.objs import *')
+exec('from collections import Counter')
 
 
 def build_remote(gw, function, engine='pypy'):

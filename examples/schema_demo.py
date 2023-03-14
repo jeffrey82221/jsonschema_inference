@@ -1,7 +1,15 @@
 """
 Schema demo
 """
-from jsonschema_inference.schema.objs import DynamicRecord, Record, Atomic, Array, Optional, Unknown, UniformRecord
+from jsonschema_inference.schema.objs import (
+    DynamicRecord,
+    Record,
+    Atomic,
+    Array,
+    Optional,
+    Unknown,
+    UniformRecord
+)
 from collections import Counter
 
 DynamicRecord({'last_serial': Atomic(int),

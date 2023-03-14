@@ -4,7 +4,6 @@ Basic Json Schema Objects
 import abc
 import copy
 import typing
-from functools import reduce
 __all__ = [
     'Atomic',
     'Union',
@@ -92,13 +91,6 @@ class Unknown(JsonSchema):
 
 
 class Union(JsonSchema):
-    @staticmethod
-    def set(json_schemas: typing.Iterable[JsonSchema]) -> JsonSchema:
-        if json_schemas:
-            result = reduce(lambda a, b: a | b, json_schemas)
-        else:
-            result = Unknown()
-        return result
 
     def __init__(self, content: typing.Set[JsonSchema]):
         super().__init__(content)
